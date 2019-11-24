@@ -76,24 +76,6 @@ router.get("/scrapeWebsites", async (req, res) => {
     res.status(200).send(content)
 })
 
-// Add Prices
-router.post("/", async (req, res) => {
-    const prices = await loadPriceCollection();
-    await prices.insertOne({
-        company: req.body.company,
-        title: req.body.title,
-        unitPrice: req.body.unitPrice,
-        tenPrice: req.body.tenPrice,
-        thirtyPrice: req.body.thirtyPrice,
-        fiftyPrice: req.body.fiftyPrice,
-        createdAt: new Date()
-    }).then(() => {
-        res.status(201).send("Pris tillagt!");
-    }).catch(err => {
-        console.log(err)
-    });
-
-})
 
 // Delete Price
 router.delete('/:id', async (req, res, next) => {
