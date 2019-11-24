@@ -19,21 +19,27 @@ router.delete('/:id', async (req, res, next) => {
 // Add Url
 router.post("/", async (req, res) => {
     const urls = await loadUrlCollection();
-    await urls.insertOne({
-        url: req.body.url,
-        createdAt: new Date()
-    }).then(() => {
-        res.status(201).send("Url tillagd!");
-    }).catch(err => {
-        console.log(err)
-    });
+    urls.findOne({ url: req.body.url }, async (err, urlAlreadyExists) => {
+        if (urlAlreadyExists) {
+            res.status(409).send("Url finns redan!");
+        } else {
+            await urls.insertOne({
+                url: req.body.url,
+                createdAt: new Date()
+            }).then(() => {
+                res.status(201).send("Url tillagd!");
+            }).catch(err => {
+                console.log(err)
+            });
+        }
+    })
 })
 
 // Delete All Urls
 router.delete('/', async (req, res, next) => {
     const urls = await loadUrlCollection();
     await urls.remove({})
-    res.status(200).send("Url raderad!");
+    res.status(200).send("Urler raderade!");
 })
 
 async function loadUrlCollection() {

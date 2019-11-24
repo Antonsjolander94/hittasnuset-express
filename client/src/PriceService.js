@@ -5,7 +5,6 @@ const url = "http://localhost:5000/api/prices/";
 
 
 class PriceService {
-
     static getPrices() {
         return new Promise(async (resolve, reject) => {
             try {
@@ -22,7 +21,6 @@ class PriceService {
             }
         });
     }
-
     static insertPrice({ company, title, unitPrice, tenPrice, thirtyPrice, fiftyPrice }) {
         return axios.post(url, {
             company,

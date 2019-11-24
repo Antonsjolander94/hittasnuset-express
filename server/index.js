@@ -11,7 +11,9 @@ app.use(cors());
 
 
 const prices = require("./routes/api/prices")
+const urls = require("./routes/api/urls")
 app.use("/api/prices", prices);
+app.use("/api/urls", urls);
 
 const port = process.env.PORT || 5000;
 
