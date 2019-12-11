@@ -16,7 +16,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(price, index) in prices" :key="price._id">
+              <tr v-for="(price, index) in sortedPrices" :key="price._id">
                 <td>{{price.company}}</td>
                 <td>{{price.title}}</td>
                 <td>{{price.unitPrice}}</td>
@@ -76,7 +76,7 @@ export default {
       return this._.orderBy(
         this.prices,
         [price => price.title.toLowerCase()],
-        ["asc"]
+        ["desc"]
       );
     }
   }

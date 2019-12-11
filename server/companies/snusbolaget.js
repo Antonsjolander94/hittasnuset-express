@@ -2,8 +2,6 @@ const cheerio = require("cheerio");
 const axios = require("axios");
 const currencyJs = require("currency.js")
 
-const priceApiUrl = "http://localhost:5000/api/prices/";
-
 const SEK = value => currencyJs(value, { symbol: 'kr', decimal: ',', separator: '.', formatWithSymbol: false, pattern: `# !` });
 
 class SnusBolaget {

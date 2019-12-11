@@ -2,6 +2,7 @@ const express = require("express");
 const mongodb = require("mongodb");
 const router = express.Router();
 const SnusBolaget = require("../../companies/snusbolaget");
+const Snus2 = require("../../companies/snus2");
 
 // Get Prices
 router.get("/", async (req, res) => {
@@ -15,38 +16,92 @@ router.post("/scrape", async (req, res) => {
         let url = req.body.url;
 
         if (url.includes("snus2.se")) {
-            res.status(404).send("Snus2.se är inte tillgängligt ännu");
+            let response = await Snus2.scrape(url);
+            response.createdAt = Date.now();
+            res.status(200).send(response);
         } else if (url.includes("snusbolaget.se")) {
             let response = await SnusBolaget.scrape(url);
+            response.createdAt = Date.now();
             res.status(200).send(response);
         }
     }
 })
 
+router.post("/addorcreateprice", async (req, res) => {
+    const prices = await loadPriceCollection();
 
+    let price = {
+        company: req.body.company,
+        title: req.body.title,
+        unitPrice: req.body.unitPrice,
+        tenPrice: req.body.tenPrice,
+        thirtyPrice: req.body.thirtyPrice,
+        fiftyPrice: req.body.fiftyPrice
+    }
+
+    prices.updateOne({ "title": price.title }, (err, result) => {
+        assert.equal(null, err);
+    })
+})
 
 // Add Url
 router.post("/addprice", async (req, res) => {
-    const prices = await loadPriceCollection();
-    prices.findOne({ title: req.body.title }, async (err, priceAlreadyExists) => {
-        if (priceAlreadyExists) {
-            res.status(409).send("Pris finns redan!");
-        } else {
-            await prices.insertOne({
-                company: req.body.company,
-                title: req.body.title,
-                unitPrice: req.body.unitPrice,
-                tenPrice: req.body.tenPrice,
-                thirtyPrice: req.body.thirtyPrice,
-                fiftyPrice: req.body.fiftyPrice,
-                createdAt: new Date()
-            }).then(() => {
-                res.status(201).send("Pris tillagd!");
-            }).catch(err => {
-                console.log(err)
-            });
+    const Prices = await loadPriceCollection();
+    const filter = { title: req.body.title };
+    const update = {
+        $set: {
+            company: req.body.company,
+            title: req.body.title,
+            unitPrice: req.body.unitPrice,
+            tenPrice: req.body.tenPrice,
+            thirtyPrice: req.body.thirtyPrice,
+            fiftyPrice: req.body.fiftyPrice,
+            globalIdentifier: req.body.globalIdentifier,
+            createdAt: new Date()
         }
-    })
+    };
+
+    let doc = await Prices.findOneAndUpdate(filter, update, {
+        upsert: true,
+        new: true
+    });
+    if (doc) {
+        res.status(200).send("Pris uppdaterat!");
+    }
+    // const prices = await loadPriceCollection();
+    // prices.findOne({ title: req.body.title, company: req.body.company }, async (err, priceAlreadyExists) => {
+    //     if (priceAlreadyExists) {
+    //         console.log({ priceAlreadyExists: priceAlreadyExists })
+    //         let newPrice = {
+    //             unitPrice: req.body.unitPrice,
+    //             tenPrice: req.body.tenPrice,
+    //             thirtyPrice: req.body.thirtyPrice,
+    //             fiftyPrice: req.body.fiftyPrice,
+    //             createdAt: new Date()
+    //         }
+    //         let id = priceAlreadyExists._id;
+
+    //         let doc = await prices.findOne({ _id: id });
+
+    //         // Document changed in MongoDB, but not in Mongoose
+    //         await prices.updateOne(filter, { name: 'Will Riker' });
+    //         res.status(200).send("Pris uppdaterat!");
+    //     } else {
+    //         await prices.insertOne({
+    //             company: req.body.company,
+    //             title: req.body.title,
+    //             unitPrice: req.body.unitPrice,
+    //             tenPrice: req.body.tenPrice,
+    //             thirtyPrice: req.body.thirtyPrice,
+    //             fiftyPrice: req.body.fiftyPrice,
+    //             createdAt: new Date()
+    //         }).then(() => {
+    //             res.status(201).send("Pris tillagd!");
+    //         }).catch(err => {
+    //             console.log(err)
+    //         });
+    //     }
+    // })
 })
 
 // Delete Price

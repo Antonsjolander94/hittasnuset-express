@@ -1,44 +1,17 @@
 <template>
   <div id="app">
-    <back-to-top bottom="50px" right="50px">
-      <button type="button" class="scroll-to-top">
-        <arrow-up-icon size="1.5x" class="custom-class"></arrow-up-icon>
-      </button>
-    </back-to-top>
-
+    <b-navbar type="dark" variant="dark" class="mb-5">
+      <b-navbar-brand href="#">NavBar</b-navbar-brand>
+    </b-navbar>
     <div class="container-fluid">
-      <div class="row">
-        <aside class="col-12 col-md-2 p-0 bg-dark fixed-top">
-          <nav>
-            <ul>
-              <li>
-                <router-link to="/">Hem</router-link>
-              </li>
-              <li>
-                <router-link to="/scrape">Hämta priser</router-link>
-              </li>
-              <li>
-                <router-link to="/createurl">Urler</router-link>
-              </li>
-            </ul>
-          </nav>
-        </aside>
-
-        <main id="main" class="col offset-md-2 bg-faded py-3">
-          <router-view></router-view>
-        </main>
-      </div>
+      <router-view></router-view>
     </div>
   </div>
 </template>
 
 <script>
-import BackToTop from "vue-backtotop";
-import { ArrowUpIcon } from "vue-feather-icons";
-
 export default {
-  name: "app",
-  components: { BackToTop, ArrowUpIcon }
+  name: "app"
 };
 </script>
 
@@ -48,7 +21,6 @@ export default {
 body,
 html {
   height: 100%;
-  padding-top: 1em;
 }
 [v-cloak] > * {
   display: none;
