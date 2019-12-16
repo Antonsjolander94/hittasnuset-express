@@ -82,7 +82,7 @@ export default {
 
 <style lang="scss">
 .url-list-wrapper {
-  max-height: 344px;
+  max-height: 136px;
   overflow-y: auto;
 }
 .url-list-item {

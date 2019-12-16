@@ -11,10 +11,11 @@ let PriceSchema = new mongoose.Schema({
     tenPrice: String,
     thirtyPrice: String,
     fiftyPrice: String,
-    globalIdentifier: {
+    url: String,
+    product_id: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "GlobalIdentifier"
-    },
+        ref: "identifier"
+    }],
     createdAt: {
         type: Date,
         default: Date.now
@@ -23,4 +24,4 @@ let PriceSchema = new mongoose.Schema({
 
 PriceSchema.plugin(findOrCreate);
 
-module.exports = mongoose.model('Price', PriceSchema);
+module.exports = mongoose.model('price', PriceSchema);

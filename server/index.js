@@ -14,10 +14,12 @@ app.use(cors());
 const pricesRoute = require('./routes/prices');
 const scrapesRoute = require('./routes/scrape');
 const urlsRoute = require('./routes/urls');
+const identifiersRoute = require('./routes/identifiers');
 
 app.use('/prices', pricesRoute);
 app.use('/scrape', scrapesRoute);
 app.use('/urls', urlsRoute);
+app.use('/identifiers', identifiersRoute);
 
 // Conntext to DB
 mongoose.connect(process.env.DBCONNECTION, {

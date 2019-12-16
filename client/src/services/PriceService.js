@@ -19,6 +19,15 @@ class PriceService {
             console.log({ error: error })
         }
     }
+
+    static async setPriceIdentifier(priceId, identifierId) {
+        console.log({ priceId: priceId })
+        console.log({ identifierId: identifierId })
+        const response = await axios.post(`${theUrl}/${priceId}/${identifierId}`);
+
+        console.log({ setPriceIdentifierResponse: response })
+    }
+
     static async insertPrice(priceArray) {
         console.log({ "price array": priceArray })
         // { company, title, unitPrice, tenPrice, thirtyPrice, fiftyPrice }
@@ -30,7 +39,7 @@ class PriceService {
                 unitPrice: item.scraped.unitPrice,
                 tenPrice: item.scraped.tenPrice,
                 thirtyPrice: item.scraped.thirtyPrice,
-                fiftyPrice: item.scraped.fiftyPrice
+                fiftyPrice: item.scraped.fiftyPrice,
             })
 
             return {

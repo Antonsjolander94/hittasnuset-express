@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Price = require('../models/Price')
+const Identifier = require('../models/Identifier')
 
 // Get all prices.
 router.get('/', async (req, res) => {
@@ -11,6 +12,7 @@ router.get('/', async (req, res) => {
         res.json({ message: err })
     }
 })
+
 
 // Create Price
 router.post('/', async (req, res) => {
@@ -44,6 +46,42 @@ router.post('/', async (req, res) => {
         res.json({ message: error })
     }
 });
+
+// New Price Global Identifier
+router.post("/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        console.log({ priceId: id })
+        // Create Identifier
+        const newIdentifier = await Identifier.findById(req.body.identifierId);
+
+        // Get Price by ID
+        const price = await Price.findById(id);
+
+        // Assign price to identifiers prices. 
+        if (!newIdentifier.prices.includes(price._id)) {
+            newIdentifier.prices.push(price);
+        } else {
+            console.log("This identifier already has this product.")
+        }
+
+        // Save the identifier
+        await newIdentifier.save();
+        // Assign Identifier to price.
+        if (!price.product_id.includes(newIdentifier._id)) {
+            price.product_id.push(newIdentifier);
+        } else {
+            console.log("This price already has this identifier.")
+        }
+
+        // Save the Price.
+        await price.save();
+        res.status(201).json({ message: `Added new identifier(${newIdentifier.title}) to ${price.title}` });
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+    }
+})
 
 // Delete Price
 router.delete('/:id', async (req, res) => {

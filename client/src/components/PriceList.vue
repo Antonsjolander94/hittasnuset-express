@@ -32,19 +32,31 @@
             <th scope="col">10-pack</th>
             <th scope="col">30-pack</th>
             <th scope="col">50-pack</th>
-            <th scope="col">Åtgärd</th>
+            <th scope="col">Ta bort</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="price in sortedPrices" :key="price._id">
+          <tr class="price-list-td" v-for="price in sortedPrices" :key="price._id">
             <td>{{price.company}}</td>
             <td>{{price.title}}</td>
             <td>{{price.unitPrice ? price.unitPrice + ' kr' : '-'}}</td>
             <td>{{price.tenPrice ? price.tenPrice + ' kr' : '-'}}</td>
             <td>{{price.thirtyPrice ? price.thirtyPrice + ' kr' : '-'}}</td>
             <td>{{price.fiftyPrice ? price.fiftyPrice + ' kr' : '-'}}</td>
-            <td>
-              <b-button size="sm" variant="outline-danger" @click="removePrice(price._id)">Ta bort</b-button>
+            <td class="d-flex flex-row align-items-center">
+              <b-button
+                size="sm"
+                class="ml-2"
+                variant="outline-danger"
+                @click="removePrice(price._id)"
+              >x</b-button>
+
+              <!-- <b-button
+                size="sm"
+                class="ml-3"
+                variant="outline-secondary"
+                @click="setPriceIdentifier(price._id, 'asd')"
+              >PrisId</b-button>-->
             </td>
           </tr>
         </tbody>
@@ -80,8 +92,16 @@
         </table>
       </div>
       <div class="d-flex flex-row align-items-center mt-5">
-        <b-button variant="primary" @click="saveGeneratedPrices">Spara priser</b-button>
-        <b-button class="ml-auto" variant="outline-secondary" @click="hideModal">Avbryt</b-button>
+        <b-button variant="primary" @click="saveGeneratedPrices" :disabled="loading">
+          <template v-if="!loading">Spara Priser</template>
+          <template v-else>Sparar Priser...</template>
+        </b-button>
+        <b-button
+          class="ml-auto"
+          variant="outline-secondary"
+          @click="hideModal"
+          :disabled="loading"
+        >Avbryt</b-button>
       </div>
     </b-modal>
   </b-card>
@@ -94,18 +114,22 @@ import Loading from "vue-loading-overlay";
 export default {
   data() {
     return {
-      loading: false
+      loading: false,
+      selected: null,
+      options: [
+        { value: null, text: "Please select an option" },
+        { value: "a", text: "This is First option" },
+        { value: "b", text: "Selected Option" },
+        { value: { C: "3PO" }, text: "This is an option with object value" },
+        { value: "d", text: "This one is disabled", disabled: true }
+      ]
     };
   },
   components: { Loading },
   computed: {
     ...mapGetters(["allUrls", "allPrices", "isLoading", "allScrapeData"]),
     sortedPrices: function() {
-      return this._.orderBy(
-        this.allPrices,
-        [price => price.company.toLowerCase()],
-        ["desc"]
-      );
+      return this._.orderBy(this.allPrices, [price => price.company], ["desc"]);
     }
   },
   async mounted() {
@@ -118,6 +142,9 @@ export default {
       "deletePrice",
       "removeScrapedData"
     ]),
+    async setPriceIdentifier(priceId, identifierId) {
+      await PriceService.setPriceIdentifier(priceId, identifierId);
+    },
     async scrapeAllUrls() {
       if (this.allUrls) {
         this.loading = true;
@@ -174,5 +201,12 @@ export default {
 }
 .dimmed-text {
   opacity: 0.6;
+}
+.price-list-td {
+  background: transparent;
+  transition: all 0.3s ease;
+  &:hover {
+    background: rgba($color: #000000, $alpha: 0.05);
+  }
 }
 </style>
